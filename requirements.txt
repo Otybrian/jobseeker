@@ -1,6 +1,6 @@
 alembic==1.7.6
 appdirs==1.4.3
-apturl==0.5.2
+apturl==0.5.2  @/tmp/build_97769b8b/
 asgiref==3.5.0
 cloudinary==1.29.0
 command-not-found==0.3
