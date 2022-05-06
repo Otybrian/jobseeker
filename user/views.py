@@ -43,16 +43,28 @@ class EmployerSignupView(generics.GenericAPIView):
 
 class CustomAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(
-            data=request.data, context={'request': request})
+        serializer=self.serializer_class(data=request.data, context={'request':request})
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
+        user=serializer.validated_data['user']
+        token, created=Token.objects.get_or_create(user=user)
         return Response({
             'token': token.key,
             'user_id': user.pk,
-            'is_jobseeker': user.is_jobseeker
+            'is_jobseeker': user.is_jobseeker,
+            'is_employer': user.is_employer
         })
+# class CustomAuthToken(ObtainAuthToken):
+#     def post(self, request, *args, **kwargs):
+#         serializer=self.serializer_class(data=request.data, context={'request':request})
+#         serializer.is_valid(raise_exception=True)
+#         user=serializer.validated_data['user']
+#         token, created=Token.objects.get_or_create(user=user)
+#         return Response({
+#             'token':token.key,
+#             'user_id':user.pk,
+#             'is_student':user.is_student,
+#             'is_tm':user.is_tm
+#         })
 
 
 class LogoutView(APIView):
