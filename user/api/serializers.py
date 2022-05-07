@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from user.models import Advertisements, User, Jobseeker, Employer
+from user.models import Advertisements, User, Jobseeker, Employer, Job
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -96,3 +96,14 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Employer
 #         fields = ('company_name', 'email', 'company_contact', 'company_location', 'company_bio', 'address', 'company_profile')
+
+
+class JobseekerViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Jobseeker
+        fields = ('jobseeker_name', 'skills', 'location', 'bio', 'contact')
+
+class JobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Job
+        fields = ('title', 'location', 'requirements', 'jobtype')

@@ -31,9 +31,15 @@ class Jobseeker(models.Model):
     skills = models.CharField(max_length=255, blank=True)
     location = models.CharField(max_length=255, blank=True)
     bio = models.TextField(max_length=500, blank=True)
+    contact = models.TextField(max_length=500, blank=True)
 
     def __str__(self):
         return self.jobseeker_name
+    
+    @classmethod
+    def search_by_skills(cls, search_term):
+        company = cls.objects.filter(title__icontains=search_term)
+        return company
 
 
 class Employer(models.Model):
@@ -60,6 +66,26 @@ class Employer(models.Model):
 
     def __str__(self):
         return self.company_name
+
+class Job(models.Model):
+    JOB_TYPE = [
+        ('Part Time', 'Part-Time'),
+        ('Remote', 'Remote'),
+        ('Full Time', 'Full-Time'),
+    ]
+    title = models.CharField(max_length=30)
+    location = models.CharField(max_length=255)
+    requirements = models.TextField()
+    jobtype = models.TextField(max_length=30, choices=JOB_TYPE)
+
+    def save_job(self):
+        self.save()
+
+    def delete_job(self):
+        self.delete()
+
+    def __str__(self):
+        return self.title
 
 class Advertisements(models.Model):
     user = models.OneToOneField(

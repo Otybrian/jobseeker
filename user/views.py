@@ -1,13 +1,16 @@
+from itsdangerous import serializer
 from rest_framework import generics, status
 from user.api import permissions
-from user.models import Advertisements, Token, Employer
+from user.models import Advertisements, Token, Employer, Job
 from rest_framework.response import Response
-from user.api.serializers import UserSerializer, JobseekerSignupSerializer, EmployerSignupSerializer, AdvertisementSerializer
+from user.api.serializers import UserSerializer, JobseekerSignupSerializer, EmployerSignupSerializer, AdvertisementSerializer, JobseekerViewSerializer, JobSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.views import APIView
 from user.api.permissions import IsJobseekerUser, IsEmployerUser
 from user.api.permissions import IsAdminOrReadOnly
 from django.http import HttpResponse, Http404,HttpResponseRedirect
+from user.models import Jobseeker
+from rest_framework import filters
 # from user.forms import EmployerInformationForm
 
 # Create your views here.
@@ -135,3 +138,51 @@ class AdvertisementsView(APIView):
             return Response(serializers.data)
         else:
             return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class JobseekersView(generics.ListAPIView):
+    # permission_classes=[permissions.IsEmployerUser]
+    serializer = JobseekerViewSerializer
+    def get_querryset(self):
+        querryset = Jobseeker.objects.all()
+        filter_backends = [filters.SearchFilter]
+        search_fields = ['jobseeker_name', 'skills', 'location', 'bio', 'contact']
+        return querryset
+
+    def get(self, request, *args, **kwargs):
+        jobseekers = self.get_querryset()
+        serializer = JobseekerViewSerializer(jobseekers, many=True)
+        return Response (serializer.data)
+
+
+class JobView(APIView):
+    # permission_classes=[permissions.IsEmployerUser]
+    def get_querryset(self):
+        jobs = Job.objects.all()
+        return jobs
+
+    def get(self, request, *args, **kwargs):
+        jobs = Job.objects.all()
+        serializer = JobSerializer(jobs, many=True)
+        return Response (serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        job_data=request.data
+        new_job = Job.objects.create()
+        new_job.save()
+        serializer = JobSerializer(new_job)
+        return Response(serializer.data)
+
+
+# def search_jobseeker(self, request, GET):
+
+#     if 'jobseeker' in request.GET and request.GET["jobseeker"]:
+#         search_term = request.GET.get("jobseeker")
+#         searched_jobseekers = Jobseeker.search_by_skills(search_term)
+#         message = f"{search_term}"
+
+#         return Response (request,{"message":message,"Jobseekers": searched_jobseekers})
+
+#     else:
+#         message = "You haven't searched for any jobseeker"
+#         return Response (request,{"message":message})
